@@ -8,24 +8,27 @@ api = Api(app)
 progs = []
 
 class MediaManager(Resource):
+    def __init__(self):
+             self.progs_id = 0 
+             super(MediaManager, self).__init__()
+
     def get(self):
         return progs
 
     def post(self):
         #  args = parser.parse_args()
-        js = json.loads(request.data)
-        progs.append(js)
+        d = json.loads(request.data)
+        self.progs_id = self.progs_id + 21
+        print self.progs_id
+        d['id'] = self.progs_id
+        progs.append(d)
         return progs, 201
-
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
 
 #parser = reqparse.RequestParser()
 #parser.add_argument('nome', type=str)
 
 api.add_resource(MediaManager, '/mm')
-api.add_resource(HelloWorld, '/')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
