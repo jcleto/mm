@@ -8,9 +8,7 @@ api = Api(app)
 progs = []
 
 class MediaManager(Resource):
-    def __init__(self):
-             self.progs_id = 0 
-             super(MediaManager, self).__init__()
+    progs_id = 0 
 
     def get(self):
         return progs
@@ -18,9 +16,8 @@ class MediaManager(Resource):
     def post(self):
         #  args = parser.parse_args()
         d = json.loads(request.data)
-        self.progs_id = self.progs_id + 21
-        print self.progs_id
-        d['id'] = self.progs_id
+        MediaManager.progs_id += 1
+        d['id'] = MediaManager.progs_id
         progs.append(d)
         return progs, 201
 
