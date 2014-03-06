@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask.ext.restful import reqparse, Api,Resource
+from flask.ext.restful import reqparse, Api,Resource,abort
 from json import loads
 
 app = Flask(__name__)
@@ -17,7 +17,7 @@ class MediaManager(Resource):
             return progs
         if type == 'brand':
             return brands
-        return 404
+        abort(404)
 
     def post(self, type):
         #  args = parser.parse_args()
@@ -33,7 +33,7 @@ class MediaManager(Resource):
             d['id'] = MediaManager.progs_id
             progs.append(d)
             return progs, 201
-        return 400
+        abort(400)
 
 #parser = reqparse.RequestParser()
 #parser.add_argument('nome', type=str)
