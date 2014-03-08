@@ -5,42 +5,55 @@ from json import loads
 app = Flask(__name__)
 api = Api(app)
 
-progs = []
-brands = []
+entities = []
+
+class MediaManagerId(Resource):
+    def get(self, type, id):
+        el = filter(lambda t: t['id'] == id and t['type'] == type, entities)
+        if len(el) == 0:
+            abort(404)
+        return el[0], 200
+
+    def put(self, type, id):
+        el = filter(lambda t: t['id'] == id and t['type'] == type, entities)
+        if len(el) == 0:
+            abort(404)
+        d = loads(request.data)
+        d['id'] = id
+        d['type'] = type
+        el[0] = d
+        return el[0], 201
+
+    def delete(self, type, id):
+        el = filter(lambda t: t['id'] == id and t['type'] == type, entities)
+        if len(el) == 0:
+            abort(404)
+        entities.remove(el[0])
+        return 204
 
 class MediaManager(Resource):
-    progs_id = 0
-    brand_id = 0
+    entity_id = 0
 
     def get(self, type):
-        if type == 'program':
-            return progs
-        if type == 'brand':
-            return brands
-        abort(404)
+        el = filter(lambda t: t['type'] == type, entities)
+        return el, 200
 
     def post(self, type):
         #  args = parser.parse_args()
         d = loads(request.data)
+        MediaManager.entity_id += 1
+        d['id'] = MediaManager.entity_id
         d['type'] = type
-        if type == 'brand':
-            MediaManager.brand_id += 1
-            d['id'] = MediaManager.brand_id
-            brands.append(d)
-            return progs, 201
-        if type == 'program':
-            MediaManager.progs_id += 1
-            d['id'] = MediaManager.progs_id
-            progs.append(d)
-            return progs, 201
-        abort(400)
+        entities.append(d)
+        return d, 201
 
 #parser = reqparse.RequestParser()
 #parser.add_argument('nome', type=str)
 
 api.add_resource(MediaManager, '/mm/<string:type>')
+api.add_resource(MediaManagerId, '/mm/<string:type>/<int:id>')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='0.0.0.0',debug=False)
 
