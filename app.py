@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask.ext.restful import reqparse, Api,Resource,abort
 from json import loads
+from operator import itemgetter
 
 app = Flask(__name__)
 api = Api(app)
@@ -18,11 +19,16 @@ class MediaManagerId(Resource):
         el = filter(lambda t: t['id'] == id and t['type'] == type, entities)
         if len(el) == 0:
             abort(404)
+        # remove current element
+        entities.remove(el[0])
         d = loads(request.data)
         d['id'] = id
         d['type'] = type
-        el[0] = d
-        return el[0], 201
+        # create new element
+        entities.append(d)
+        # sort list
+        entities.sort(key=itemgetter('id'))
+        return d, 201
 
     def delete(self, type, id):
         el = filter(lambda t: t['id'] == id and t['type'] == type, entities)
@@ -55,5 +61,5 @@ api.add_resource(MediaManagerId, '/mm/<string:type>/<int:id>')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=False)
+    app.run(host='0.0.0.0',debug=True)
 
