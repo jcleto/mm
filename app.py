@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask.ext.restful import reqparse, Api,Resource,abort
+from flask.ext.restful import reqparse, Api, Resource, abort
 from json import loads
 from operator import itemgetter
 
@@ -7,6 +7,7 @@ app = Flask(__name__)
 api = Api(app)
 
 entities = []
+
 
 class MediaManagerId(Resource):
     def get(self, type, id):
@@ -37,6 +38,7 @@ class MediaManagerId(Resource):
         entities.remove(el[0])
         return 204
 
+
 class MediaManager(Resource):
     entity_id = 0
 
@@ -45,7 +47,6 @@ class MediaManager(Resource):
         return el, 200
 
     def post(self, type):
-        #  args = parser.parse_args()
         d = loads(request.data)
         MediaManager.entity_id += 1
         d['id'] = MediaManager.entity_id
@@ -53,13 +54,8 @@ class MediaManager(Resource):
         entities.append(d)
         return d, 201
 
-#parser = reqparse.RequestParser()
-#parser.add_argument('nome', type=str)
-
 api.add_resource(MediaManager, '/mm/<string:type>')
 api.add_resource(MediaManagerId, '/mm/<string:type>/<int:id>')
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
-
