@@ -8,6 +8,16 @@ api = Api(app)
 
 entities = []
 
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('no server running')
+    func()
+
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'shuting down server'
 
 class MediaManagerId(Resource):
     def get(self, type, id):
