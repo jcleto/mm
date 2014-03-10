@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify
-from flask.ext.restful import reqparse, Api, Resource, abort
+from flask import Flask, request  # , jsonify, redirect
+from flask.ext.restful import Api, Resource, abort  # , reqparse
 from json import loads
 from operator import itemgetter
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 api = Api(app)
 
 entities = []
+
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -14,10 +16,17 @@ def shutdown_server():
         raise RuntimeError('no server running')
     func()
 
+#@app.before_request
+#def remove_trailing_slash():
+#    if request.path != '/' and request.path.endswith('/'):
+#        return redirect(request.path[:-1])
+
+
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
     shutdown_server()
     return 'shuting down server'
+
 
 class MediaManagerId(Resource):
     def get(self, type, id):
@@ -64,8 +73,9 @@ class MediaManager(Resource):
         entities.append(d)
         return d, 201
 
-api.add_resource(MediaManager, '/mm/<string:type>')
-api.add_resource(MediaManagerId, '/mm/<string:type>/<int:id>')
+
+api.add_resource(MediaManager, '/api/types/<string:type>/entities')
+api.add_resource(MediaManagerId, '/api/types/<string:type>/entities/<int:id>')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='0.0.0.0', port=9090, debug=False)
