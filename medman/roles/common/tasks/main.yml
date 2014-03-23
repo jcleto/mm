@@ -1,0 +1,15 @@
+---
+# file: roles/commons/tasks/main.yml
+
+-   name: Common | Make sure some basic tools are installed
+    apt: pkg={{ item }}
+    with_items:
+        - curl
+        - htop
+        - tmux
+
+-   name: Common | Make sure git is installed
+    apt: pkg=git
+
+-   name: Common | Make sure git is installed
+    apt: pkg=python2.7
